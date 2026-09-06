@@ -12,7 +12,7 @@ Personalized movie recommendations learned purely from rating patterns, no genre
 
 ## 📌 Overview
 
-This repository contains a Jupyter/Kaggle notebook that builds a collaborative filtering movie recommender using **Singular Value Decomposition (SVD)** matrix factorization, implemented with the `scikit-surprise` library, trained on the **MovieLens "latest small" dataset** (100,836 ratings from 610 users across 9,724 rated movies).
+This repository contains a Jupyter/Kaggle notebook that builds a collaborative filtering movie recommender using **Singular Value Decomposition (SVD)** matrix factorization, implemented with the `scikit-surprise` library, trained on the **MovieLens "latest small" dataset** (100,836 ratings from 610 users across 9,721 rated movies).
 
 The notebook covers the full pipeline end to end. It loads and validates all four raw MovieLens CSVs, audits and resolves a handful of duplicate movie IDs against external IMDb/TMDb identifiers, runs exploratory data analysis on rating and user behavior patterns, trains a baseline SVD model with 5-fold cross-validation, tunes hyperparameters with `GridSearchCV`, refits and evaluates the tuned model on a held-out test set, retrains it one more time on the full dataset for production use, and finally generates personalized top-10 recommendations for a target user before saving the trained model with `joblib`.
 
@@ -53,9 +53,9 @@ Ratings in this dataset run on a 0.5 to 5.0 scale, so an RMSE around 0.87 means 
 
 | Stage | RMSE ↓ | MAE ↓ | FCP ↑ |
 | :--- | :---: | :---: | :---: |
-| Baseline SVD, 5-fold CV average | 0.8743 ± 0.0031 | 0.6708 ± 0.0028 | 0.6630 ± 0.0036 |
+| Baseline SVD, 5-fold CV average | 0.8745 ± 0.0059 | 0.6720 ± 0.0048 | 0.6584 ± 0.0011 |
 | Baseline SVD, held-out test split | 0.8804 | 0.6763 | 0.6583 |
-| Tuned SVD, best GridSearchCV CV score | 0.8648 | 0.6646 | not optimized for FCP |
+| Tuned SVD, best GridSearchCV CV score | 0.8649 | 0.6646 | not optimized for FCP |
 | **Tuned SVD, held-out test split** | **0.8726** | **0.6704** | **0.6701** |
 
 **Best hyperparameters found** (36 combinations searched, 5-fold cross-validation each): `n_factors=150`, `n_epochs=30`, `lr_all=0.005`, `reg_all=0.1`, `random_state=42`. Search space covered `n_factors` in `[50, 100, 150]`, `n_epochs` in `[15, 20, 30]`, `lr_all` in `[0.002, 0.005]`, and `reg_all` in `[0.02, 0.1]`.
@@ -135,7 +135,7 @@ Run all cells from top to bottom. Grid search over 36 hyperparameter combination
 
 Putting the whole pipeline together, this project set out to solve two concrete problems: a large, unpersonalized catalog that costs engagement, and a sparse, noisy rating dataset that makes a naive similarity approach unreliable. The SVD-based collaborative filtering pipeline built here addresses both directly. It learns latent taste factors purely from the rating matrix, which lets it rank the entire unwatched catalog for any given user instead of falling back on a generic popularity list, and it does so on top of a manually audited dataset where duplicate movie IDs were resolved against external IMDb/TMDb identifiers first, so the model is learning from a clean signal rather than a fragmented one.
 
-The numbers back this up in a measurable way. The baseline SVD model already reached an RMSE of about 0.87 on both cross-validation and the held-out test set, meaning its predicted ratings land, on average, well under one star away from the true rating on a 0.5 to 5.0 scale. Hyperparameter tuning via GridSearchCV then pushed that further, improving the held-out test RMSE to 0.8726 and MAE to 0.6704, alongside a noticeably higher FCP of 0.6701 compared to the baseline's 0.6583, meaning the tuned model is also better at correctly ranking which of two movies a user would prefer, not just at predicting individual scores accurately.
+The numbers back this up in a measurable way. RMSE and MAE both improved on cross-validation, the two metrics the grid search was actually optimized against, and all three tracked metrics, RMSE, MAE, and FCP, improved on the held-out test set: RMSE from 0.8804 to 0.8726, MAE from 0.6763 to 0.6704, and FCP from 0.6583 to 0.6701, confirming the tuned model is also better at correctly ranking which of two movies a user would prefer, not just at predicting individual scores accurately.
 
 That said, this is a solution to the two problems above specifically, not a complete, production-ready recommender. It still has real, honest gaps. The model has no way to score a movie or a user it has never seen a rating for, since it learns exclusively from historical `(userId, movieId, rating)` triples and ignores genre, tag, and other metadata that's already sitting in the dataset. The tuning process also only searched a fixed grid of 36 combinations rather than a continuous space, so "best hyperparameters" here means best within that grid, not a guaranteed global optimum. And the entire system currently lives inside a notebook, with no API or interface to query it interactively. The sections immediately below go through each of these gaps in detail, and lay out concrete next steps for closing them, starting with the ones that would matter most for turning this from a working notebook into something closer to a real product.
 
@@ -152,6 +152,7 @@ That said, this is a solution to the two problems above specifically, not a comp
 * **Structural cold-start problem.** SVD here learns purely from `(userId, movieId, rating)` triples. It has no way to score a brand-new movie that has zero ratings yet, or a brand-new user with no rating history at all, because there's no learned latent vector for either one to fall back on. `genres.csv` and `tags.csv` are loaded and used for display and duplicate-ID resolution, but never as model input, so none of that metadata currently helps with this gap.
 * **Small dataset relative to production catalogs.** MovieLens "latest small" is a useful, well-understood benchmark, but at ~100k ratings across ~9.7k movies and 610 users it's far smaller than a real streaming catalog's data (tens of millions of ratings). The absolute error numbers reported here may not transfer directly to a larger, even sparser real-world catalog.
 * **Grid search covers a fixed, coarse grid rather than a continuous search.** "Optimal hyperparameters" here means the best configuration within the 36 combinations that were actually tried, not a guaranteed global optimum. `optuna` is already imported at the top of the notebook, which suggests a more efficient search was planned but not yet wired in.
+* **Results can shift slightly between runs.** SVD here trains with stochastic gradient descent, so even with a fixed `random_state`, exact metric values can vary a little from run to run (and more so across different library or NumPy versions). The relative pattern (tuned beats baseline) should hold consistently, even if the exact decimal values move around.
 
 ---
 
