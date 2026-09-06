@@ -53,9 +53,9 @@ Ratings in this dataset run on a 0.5 to 5.0 scale, so an RMSE around 0.87 means 
 
 | Stage | RMSE ↓ | MAE ↓ | FCP ↑ |
 | :--- | :---: | :---: | :---: |
-| Baseline SVD, 5-fold CV average | 0.8727 ± 0.0069 | 0.6708 ± 0.0043 | 0.6596 ± 0.0031 |
+| Baseline SVD, 5-fold CV average | 0.8743 ± 0.0031 | 0.6708 ± 0.0028 | 0.6630 ± 0.0036 |
 | Baseline SVD, held-out test split | 0.8804 | 0.6763 | 0.6583 |
-| Tuned SVD, best GridSearchCV CV score | 0.8644 | 0.6644 | not optimized for FCP |
+| Tuned SVD, best GridSearchCV CV score | 0.8648 | 0.6646 | not optimized for FCP |
 | **Tuned SVD, held-out test split** | **0.8726** | **0.6704** | **0.6701** |
 
 **Best hyperparameters found** (36 combinations searched, 5-fold cross-validation each): `n_factors=150`, `n_epochs=30`, `lr_all=0.005`, `reg_all=0.1`, `random_state=42`. Search space covered `n_factors` in `[50, 100, 150]`, `n_epochs` in `[15, 20, 30]`, `lr_all` in `[0.002, 0.005]`, and `reg_all` in `[0.02, 0.1]`.
