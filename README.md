@@ -12,7 +12,7 @@ Personalized movie recommendations learned purely from rating patterns, no genre
 
 ## 📌 Overview
 
-This repository contains a Jupyter/Kaggle notebook that builds a collaborative filtering movie recommender using **Singular Value Decomposition (SVD)** matrix factorization, implemented with the `scikit-surprise` library, trained on the **MovieLens "latest small" dataset** (100,836 ratings from 610 users across 9,724 rated movies).
+This repository contains a Jupyter/Kaggle notebook that builds a collaborative filtering movie recommender using **Singular Value Decomposition (SVD)** matrix factorization, implemented with the `scikit-surprise` library, trained on the **MovieLens "latest small" dataset** (100,836 ratings from 610 users across 9,721 rated movies).
 
 The notebook covers the full pipeline end to end. It loads and validates all four raw MovieLens CSVs, audits and resolves a handful of duplicate movie IDs against external IMDb/TMDb identifiers, runs exploratory data analysis on rating and user behavior patterns, trains a baseline SVD model with 5-fold cross-validation, tunes hyperparameters with `GridSearchCV`, refits and evaluates the tuned model on a held-out test set, retrains it one more time on the full dataset for production use, and finally generates personalized top-10 recommendations for a target user before saving the trained model with `joblib`.
 
