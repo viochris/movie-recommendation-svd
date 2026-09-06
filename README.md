@@ -12,7 +12,7 @@ Personalized movie recommendations learned purely from rating patterns, no genre
 
 ## 📌 Overview
 
-This repository contains a Jupyter/Kaggle notebook that builds a collaborative filtering movie recommender using **Singular Value Decomposition (SVD)** matrix factorization, implemented with the `scikit-surprise` library, trained on the **MovieLens "latest small" dataset** (100,836 ratings from 610 users across 9,721 rated movies).
+This repository contains a Jupyter/Kaggle notebook that builds a collaborative filtering movie recommender using **Singular Value Decomposition (SVD)** matrix factorization, implemented with the `scikit-surprise` library, trained on the **MovieLens "latest small" dataset** (100,836 ratings from 610 users across 9,724 rated movies).
 
 The notebook covers the full pipeline end to end. It loads and validates all four raw MovieLens CSVs, audits and resolves a handful of duplicate movie IDs against external IMDb/TMDb identifiers, runs exploratory data analysis on rating and user behavior patterns, trains a baseline SVD model with 5-fold cross-validation, tunes hyperparameters with `GridSearchCV`, refits and evaluates the tuned model on a held-out test set, retrains it one more time on the full dataset for production use, and finally generates personalized top-10 recommendations for a target user before saving the trained model with `joblib`.
 
@@ -53,9 +53,9 @@ Ratings in this dataset run on a 0.5 to 5.0 scale, so an RMSE around 0.87 means 
 
 | Stage | RMSE ↓ | MAE ↓ | FCP ↑ |
 | :--- | :---: | :---: | :---: |
-| Baseline SVD, 5-fold CV average | 0.8745 ± 0.0057 | 0.6719 ± 0.0034 | 0.6610 ± 0.0026 |
+| Baseline SVD, 5-fold CV average | 0.8727 ± 0.0069 | 0.6708 ± 0.0043 | 0.6596 ± 0.0031 |
 | Baseline SVD, held-out test split | 0.8804 | 0.6763 | 0.6583 |
-| Tuned SVD, best GridSearchCV CV score | 0.8649 | 0.6644 | not optimized for FCP |
+| Tuned SVD, best GridSearchCV CV score | 0.8644 | 0.6644 | not optimized for FCP |
 | **Tuned SVD, held-out test split** | **0.8726** | **0.6704** | **0.6701** |
 
 **Best hyperparameters found** (36 combinations searched, 5-fold cross-validation each): `n_factors=150`, `n_epochs=30`, `lr_all=0.005`, `reg_all=0.1`, `random_state=42`. Search space covered `n_factors` in `[50, 100, 150]`, `n_epochs` in `[15, 20, 30]`, `lr_all` in `[0.002, 0.005]`, and `reg_all` in `[0.02, 0.1]`.
