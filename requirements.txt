@@ -1,0 +1,54 @@
+# --- Core data handling ---
+numpy
+pandas
+scipy
+
+# --- Visualization ---
+matplotlib
+seaborn
+
+# --- Recommender system (SVD) ---
+scikit-surprise
+
+# --- Modeling, tuning, and resampling (imported in the setup cell) ---
+scikit-learn
+imbalanced-learn
+optuna
+xgboost
+lightgbm
+catboost
+
+# --- Model interpretability ---
+lime
+
+# --- Model persistence ---
+joblib
+
+# ------------------------------------------------------------------
+# NOTES (read before you `pip install`):
+#
+# 1. `scikit-surprise` compiles native (Cython/C) extensions when it
+#    installs, and its build script needs `numpy` to already be
+#    importable at that point. Installing everything in this file in
+#    ONE `pip install -r requirements.txt` call lets pip sequence
+#    that correctly. Installing scikit-surprise alone into a totally
+#    empty environment can fail if numpy isn't present yet.
+#
+# 2. On Windows, if pip can't find a prebuilt wheel for your Python
+#    version, it will try to compile scikit-surprise locally and
+#    fail asking for "Microsoft Visual C++ 14.0 or greater". Install
+#    the "Desktop development with C++" workload from
+#    https://visualstudio.microsoft.com/visual-cpp-build-tools/ to
+#    fix this, then reinstall.
+#
+# 3. scikit-surprise has occasionally been built against NumPy 1.x
+#    internals. If you see an error like "compiled using NumPy 1.x
+#    cannot be run in NumPy 2.x", run `pip install "numpy<2"` and
+#    reinstall scikit-surprise afterward.
+#
+# 4. Several packages here (xgboost, lightgbm, catboost,
+#    imbalanced-learn, lime, optuna) are imported in the notebook's
+#    setup cell but are not actually used by the SVD pipeline itself.
+#    They're included so the notebook runs top to bottom without an
+#    ImportError, not because the recommender depends on them.
+# ------------------------------------------------------------------
